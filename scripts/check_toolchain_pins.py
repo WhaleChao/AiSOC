@@ -237,28 +237,18 @@ CROSS_ROOT_OVERRIDE_EXEMPT: dict[tuple[str, str], tuple[tuple[str, ...], str]] =
     # a range written for the web workspace, and apps/mobile is excluded from
     # pnpm-workspace.yaml and built by no Dockerfile, so none of it reaches a
     # shipped image.
-    # Recorded in both directions because the comparison is symmetric: the
-    # gate asks of every (declaring root, other root) pair whether the other
-    # satisfies this one's range, so a one-sided entry leaves the mirror
-    # failing for the same, already-justified reason.
     ("undici", "apps/mobile"): (
         ("6.29.1",),
         "Expo's dev tooling (@expo/cli 54.0.27) depends on the undici 6.x "
         "line; the root's 8.x override exists for GHSA-xjj6-f33q-929c, which "
-        "6.x received separately in 6.29.1. OSV returns no advisories for "
-        "6.29.1 (checked 2026-10-25). apps/mobile is excluded from the pnpm "
-        "workspace and built by no Dockerfile, so this resolution is in no "
-        "shipped image",
-    ),
-    # Keyed "" rather than ".": an install root's `directory` is relative to
-    # the repository and the root's own is the empty string.
-    ("undici", ""): (
-        ("8.12.3",),
-        "The mirror of the apps/mobile entry above. The web workspace's own "
-        "tree is on the undici 8.x line and resolves 8.12.3, the release that "
-        "fixes GHSA-xjj6-f33q-929c; OSV returns no advisories for it "
-        "(checked 2026-10-25). apps/mobile cannot be held to this range "
-        "because Expo's CLI depends on 6.x",
+        "6.x received separately in 6.29.1 — the version apps/mobile resolves "
+        "on its own, with no override of its own to declare. OSV returns no "
+        "advisories for 6.29.1 (checked 2026-10-25), so this is a patched "
+        "line rather than a root accepting a vulnerable release. Forcing 8.x "
+        "would replace the HTTP client Expo's CLI speaks to satisfy a range "
+        "written for the web workspace, and apps/mobile is excluded from "
+        "pnpm-workspace.yaml and built by no Dockerfile, so none of it "
+        "reaches a shipped image",
     ),
     ("ws", "apps/mobile"): (
         ("6.2.6", "7.5.13"),
